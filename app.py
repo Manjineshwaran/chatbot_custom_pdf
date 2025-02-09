@@ -1,13 +1,13 @@
 import streamlit as st
 import os
-import shutil
 import warnings
 from typing import List
 from dotenv import load_dotenv
+import pickle
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_groq import ChatGroq
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -41,15 +41,22 @@ def create_vector_store(documents: List[Document], embedding_model: str = 'sente
     try:
         embeddings = HuggingFaceEmbeddings(model_name=embedding_model)
         
-        vector_store_path = "chroma_vector_store"  
-        if os.path.exists(vector_store_path):
-            shutil.rmtree(vector_store_path)  
+        vector_store = FAISS.from_documents(documents, embeddings)
 
-        vector_store = Chroma.from_documents(documents, embeddings, persist_directory=vector_store_path)
-        
+        with open("faiss_vector_store.pkl", "wb") as f:
+            pickle.dump(vector_store, f)
+
         return vector_store
     except Exception as e:
         st.error(f"Error creating vector store: {e}")
+        return None
+
+def load_vector_store():
+    try:
+        with open("faiss_vector_store.pkl", "rb") as f:
+            vector_store = pickle.load(f)
+        return vector_store
+    except FileNotFoundError:
         return None
 
 def create_qa_chain(vector_store):
@@ -75,7 +82,7 @@ def create_qa_chain(vector_store):
 
 class PDFProcessor:
     def __init__(self):
-        self.vector_store = None
+        self.vector_store = load_vector_store()
         self.qa_chain = None
         self.processed_files = []
     
@@ -134,6 +141,7 @@ class PDFProcessor:
         except Exception as e:
             st.error(f"Error processing query: {e}")
             return f"Error processing query: {e}", []
+
 def main():
     st.title("Eshwaran's AI Assistant")
     st.markdown("### Upload PDFs and ask questions about their content.")

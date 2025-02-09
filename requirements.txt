@@ -1,8 +1,8 @@
-streamlit==1.23.0
-python-dotenv==1.0.0
-langchain==0.0.229
-langchain-community==0.0.234
-langchain-groq==0.0.1
-huggingface_hub==0.15.1
-chromadb==0.4.4
-requests==2.28.2
+streamlit==1.42.0
+python-dotenv==1.0.1
+langchain==0.3.18
+langchain-community==0.3.17
+langchain-groq==0.2.4
+huggingface_hub==0.28.1
+chromadb==0.6.3
+requests==2.32.3

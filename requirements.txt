@@ -7,3 +7,4 @@ huggingface_hub==0.28.1
 chromadb==0.6.3
 requests==2.32.3
 pypdf==5.2.0
+sentence-transformers==3.4.1

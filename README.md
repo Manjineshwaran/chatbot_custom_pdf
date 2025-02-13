@@ -12,7 +12,7 @@ After finding the relevant pieces, the system uses a language model to generate 
 - Document text extraction and chunking
 - Vector-based semantic search
 - Question answering using state-of-the-art language model
-- Gradio-based web interface for easy interaction
+- Streamlit-based web interface for easy interaction
 
 ## Technologies Used
 - Streamlit: Web interface creation

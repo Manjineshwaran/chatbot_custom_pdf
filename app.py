@@ -4,6 +4,8 @@ import warnings
 from typing import List
 from dotenv import load_dotenv
 import pickle
+import random
+import time
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.embeddings.huggingface import HuggingFaceEmbeddings
@@ -116,7 +118,6 @@ class PDFProcessor:
             st.error("Failed to create vector store")
             return "Failed to create vector store"
         
-        st.info("Creating QA chain...")
         self.qa_chain = create_qa_chain(self.vector_store)
         if not self.qa_chain:
             st.error("Failed to create QA chain")
@@ -158,17 +159,25 @@ def main():
         else:
             st.warning("Please upload PDF files first.")
     
-    query = st.text_input("Ask a Question", "")
-    if st.button("Submit Query"):
-        if query.strip():
-            answer, sources = pdf_processor.query_pdfs(query)
-            if answer:
-                st.text_area("Answer", value=answer, height=100, disabled=True)
-            else:
-                st.warning("No answer returned. Ensure PDFs are processed correctly.")
-            
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+    
+    if query := st.chat_input("Ask a Question"):
+        with st.chat_message("user"):
+            st.markdown(query)
+        st.session_state.messages.append({"role": "user", "content": query})
+        
+        answer, sources = pdf_processor.query_pdfs(query)
+        if answer:
+            with st.chat_message("assistant"):
+                st.markdown(answer)
+            st.session_state.messages.append({"role": "assistant", "content": answer})
         else:
-            st.warning("Please enter a query.")
+            st.warning("No answer returned. Ensure PDFs are processed correctly.")
 
 if __name__ == "__main__":
     main()

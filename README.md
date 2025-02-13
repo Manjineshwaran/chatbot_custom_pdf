@@ -15,7 +15,7 @@ After finding the relevant pieces, the system uses a language model to generate 
 - Gradio-based web interface for easy interaction
 
 ## Technologies Used
-- Gradio: Web interface creation
+- Streamlit: Web interface creation
 - LangChain: Document processing and QA workflow
 - HuggingFace: Embedding generation
 - Groq: Large Language Model (LLM) for question answering
